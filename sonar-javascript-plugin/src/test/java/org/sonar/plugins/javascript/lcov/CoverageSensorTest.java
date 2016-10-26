@@ -21,6 +21,7 @@ package org.sonar.plugins.javascript.lcov;
 
 import com.google.common.collect.ImmutableSet;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,10 +31,9 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.InputFile.Type;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.FileMetadata;
-import org.sonar.api.batch.sensor.coverage.CoverageType;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
+import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
-import org.sonar.api.internal.google.common.base.Charsets;
 import org.sonar.plugins.javascript.JavaScriptPlugin;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +51,7 @@ public class CoverageSensorTest {
 
   @Before
   public void init() {
-    settings = new Settings();
+    settings = new MapSettings();
     settings.setProperty(JavaScriptPlugin.LCOV_UT_REPORT_PATH, "reports/report_ut.lcov");
     settings.setProperty(JavaScriptPlugin.LCOV_IT_REPORT_PATH, "reports/report_it.lcov");
     context = SensorContextTester.create(moduleBaseDir);
@@ -72,7 +72,7 @@ public class CoverageSensorTest {
       .setLanguage("js")
       .setType(type);
 
-    inputFile.initMetadata(new FileMetadata().readMetadata(inputFile.file(), Charsets.UTF_8));
+    inputFile.initMetadata(new FileMetadata().readMetadata(inputFile.file(), StandardCharsets.UTF_8));
     context.fileSystem().add(inputFile);
 
     return inputFile;
@@ -85,7 +85,7 @@ public class CoverageSensorTest {
     utCoverageSensor.execute(context, linesOfCode);
 
     // expected logged text: "No coverage information will be saved because all LCOV files cannot be found."
-    assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, 1)).isNull();
+    assertThat(context.lineHits("moduleKey:file1.js", 1)).isNull();
   }
 
   @Test
@@ -95,18 +95,14 @@ public class CoverageSensorTest {
     Integer[] file2Expected = {5, 5, null, null};
 
     for (int line = 1; line <= 4; line++) {
-      assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, line)).isEqualTo(file1Expected[line - 1]);
-      assertThat(context.lineHits("moduleKey:file1.js", CoverageType.IT, line)).isNull();
-      assertThat(context.lineHits("moduleKey:file1.js", CoverageType.OVERALL, line)).isNull();
+      assertThat(context.lineHits("moduleKey:file1.js", line)).isEqualTo(file1Expected[line - 1]);
 
-      assertThat(context.lineHits("moduleKey:file2.js", CoverageType.UNIT, line)).isEqualTo(file2Expected[line - 1]);
-      assertThat(context.lineHits("moduleKey:file3.js", CoverageType.UNIT, line)).isNull();
-      assertThat(context.lineHits("moduleKey:tests/file1.js", CoverageType.UNIT, line)).isNull();;
+      assertThat(context.lineHits("moduleKey:file2.js", line)).isEqualTo(file2Expected[line - 1]);
     }
 
-    assertThat(context.conditions("moduleKey:file1.js", CoverageType.UNIT, 1)).isNull();
-    assertThat(context.conditions("moduleKey:file1.js", CoverageType.UNIT, 2)).isEqualTo(4);
-    assertThat(context.coveredConditions("moduleKey:file1.js", CoverageType.UNIT, 2)).isEqualTo(2);
+    assertThat(context.conditions("moduleKey:file1.js", 1)).isNull();
+    assertThat(context.conditions("moduleKey:file1.js", 2)).isEqualTo(4);
+    assertThat(context.coveredConditions("moduleKey:file1.js", 2)).isEqualTo(2);
   }
 
 
@@ -118,15 +114,14 @@ public class CoverageSensorTest {
     Integer[] file2Expected = {0, 0, 0, null};
 
     for (int line = 1; line <= 4; line++) {
-      assertThat(context.lineHits("moduleKey:file1.js", CoverageType.IT, line)).isEqualTo(file1Expected[line - 1]);
-      assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, line)).isNull();
+      assertThat(context.lineHits("moduleKey:file1.js", line)).isEqualTo(file1Expected[line - 1]);
 
-      assertThat(context.lineHits("moduleKey:file2.js", CoverageType.IT, line)).isEqualTo(file2Expected[line - 1]);
+      assertThat(context.lineHits("moduleKey:file2.js", line)).isEqualTo(file2Expected[line - 1]);
     }
 
-    assertThat(context.conditions("moduleKey:file1.js", CoverageType.IT, 1)).isNull();
-    assertThat(context.conditions("moduleKey:file1.js", CoverageType.IT, 2)).isEqualTo(4);
-    assertThat(context.coveredConditions("moduleKey:file1.js", CoverageType.IT, 2)).isEqualTo(1);
+    assertThat(context.conditions("moduleKey:file1.js", 1)).isNull();
+    assertThat(context.conditions("moduleKey:file1.js", 2)).isEqualTo(4);
+    assertThat(context.coveredConditions("moduleKey:file1.js", 2)).isEqualTo(1);
   }
 
   @Test
@@ -137,18 +132,15 @@ public class CoverageSensorTest {
     Integer[] file2Expected = {5, 5, null, null};
 
     for (int line = 1; line <= 4; line++) {
-      assertThat(context.lineHits("moduleKey:file1.js", CoverageType.OVERALL, line)).isEqualTo(file1Expected[line - 1]);
-      assertThat(context.lineHits("moduleKey:file1.js", CoverageType.IT, line)).isNull();
-      assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, line)).isNull();
+      assertThat(context.lineHits("moduleKey:file1.js", line)).isEqualTo(file1Expected[line - 1]);
 
-      assertThat(context.lineHits("moduleKey:file2.js", CoverageType.OVERALL, line)).isEqualTo(file2Expected[line - 1]);
-      assertThat(context.lineHits("moduleKey:file3.js", CoverageType.OVERALL, line)).isNull();
-      assertThat(context.lineHits("moduleKey:tests/file1.js", CoverageType.OVERALL, line)).isNull();
+      assertThat(context.lineHits("moduleKey:file2.js", line)).isEqualTo(file2Expected[line - 1]);
+      assertThat(context.lineHits("moduleKey:tests/file1.js", line)).isNull();
     }
 
-    assertThat(context.conditions("moduleKey:file1.js", CoverageType.OVERALL, 1)).isNull();
-    assertThat(context.conditions("moduleKey:file1.js", CoverageType.OVERALL, 2)).isEqualTo(4);
-    assertThat(context.coveredConditions("moduleKey:file1.js", CoverageType.OVERALL, 2)).isEqualTo(3);
+    assertThat(context.conditions("moduleKey:file1.js", 1)).isNull();
+    assertThat(context.conditions("moduleKey:file1.js", 2)).isEqualTo(4);
+    assertThat(context.coveredConditions("moduleKey:file1.js", 2)).isEqualTo(3);
   }
 
   @Test
@@ -156,12 +148,12 @@ public class CoverageSensorTest {
     settings.setProperty(JavaScriptPlugin.LCOV_UT_REPORT_PATH, "reports/wrong_line_report.lcov");
     utCoverageSensor.execute(context, linesOfCode);
 
-    assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, 0)).isNull();
-    assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, 2)).isEqualTo(1);
+    assertThat(context.lineHits("moduleKey:file1.js", 0)).isNull();
+    assertThat(context.lineHits("moduleKey:file1.js", 2)).isEqualTo(1);
 
-    assertThat(context.conditions("moduleKey:file1.js", CoverageType.UNIT, 102)).isNull();
-    assertThat(context.conditions("moduleKey:file1.js", CoverageType.UNIT, 2)).isEqualTo(3);
-    assertThat(context.coveredConditions("moduleKey:file1.js", CoverageType.UNIT, 2)).isEqualTo(1);
+    assertThat(context.conditions("moduleKey:file1.js", 102)).isNull();
+    assertThat(context.conditions("moduleKey:file1.js", 2)).isEqualTo(3);
+    assertThat(context.coveredConditions("moduleKey:file1.js", 2)).isEqualTo(1);
   }
 
   @Test
@@ -170,45 +162,33 @@ public class CoverageSensorTest {
     utCoverageSensor.execute(context, linesOfCode);
 
     // expected logged text: "Could not resolve 1 file paths in [...], first unresolved path: unresolved/file1.js"
-    assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, 1)).isEqualTo(0);
+    assertThat(context.lineHits("moduleKey:file1.js", 1)).isEqualTo(0);
   }
 
   @Test
   public void test_no_report_path_no_force_zero() {
-    context.setSettings(new Settings());
+    context.setSettings(new MapSettings());
     utCoverageSensor.execute(context, linesOfCode);
-    assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, 1)).isNull();
+    assertThat(context.lineHits("moduleKey:file1.js", 1)).isNull();
 
-    context.setSettings(new Settings().setProperty(JavaScriptPlugin.LCOV_UT_REPORT_PATH, "reports/report_ut.lcov"));
-    itCoverageSensor.execute(context, linesOfCode);
-    assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, 1)).isNull();
-    overallCoverageSensor.execute(context, linesOfCode);
-    assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, 1)).isNull();
-
-    context.setSettings(settings);
+    context.setSettings(new MapSettings().setProperty(JavaScriptPlugin.LCOV_UT_REPORT_PATH, "reports/report_ut.lcov"));
     utCoverageSensor.execute(context, linesOfCode);
-    assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, 1)).isEqualTo(2);
+    assertThat(context.lineHits("moduleKey:file1.js", 1)).isEqualTo(2);
   }
 
   @Test
   public void test_force_zero_coverage_no_report() {
-    Settings newSettings = new Settings().setProperty(JavaScriptPlugin.FORCE_ZERO_COVERAGE_KEY, "true");
+    Settings newSettings = new MapSettings().setProperty(JavaScriptPlugin.FORCE_ZERO_COVERAGE_KEY, "true");
     context.setSettings(newSettings);
     utCoverageSensor.execute(context, linesOfCode);
-    assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, 1)).isEqualTo(0);
-
-    context.setSettings(newSettings.setProperty(JavaScriptPlugin.LCOV_UT_REPORT_PATH, "reports/report_ut.lcov"));
-    itCoverageSensor.execute(context, linesOfCode);
-    assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, 1)).isEqualTo(0);
-    overallCoverageSensor.execute(context, linesOfCode);
-    assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, 1)).isEqualTo(0);
+    assertThat(context.lineHits("moduleKey:file1.js", 1)).isEqualTo(0);
   }
 
   @Test
   public void test_force_zero_coverage_no_lines_of_code() throws Exception {
-    Settings newSettings = new Settings().setProperty(JavaScriptPlugin.FORCE_ZERO_COVERAGE_KEY, "true");
+    Settings newSettings = new MapSettings().setProperty(JavaScriptPlugin.FORCE_ZERO_COVERAGE_KEY, "true");
     context.setSettings(newSettings);
     utCoverageSensor.execute(context, new HashMap<>());
-    assertThat(context.lineHits("moduleKey:file1.js", CoverageType.UNIT, 1)).isNull();
+    assertThat(context.lineHits("moduleKey:file1.js", 1)).isNull();
   }
 }

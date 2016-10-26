@@ -24,6 +24,7 @@ import com.sonar.sslr.api.typed.ActionParser;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.List;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,7 +34,6 @@ import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.fs.internal.FileMetadata;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
-import org.sonar.api.internal.google.common.io.Files;
 import org.sonar.duplications.internal.pmd.TokensLine;
 import org.sonar.javascript.parser.JavaScriptParserBuilder;
 import org.sonar.javascript.visitors.JavaScriptVisitorContext;
@@ -77,7 +77,7 @@ public class CpdVisitorTest {
 
   private void scan(String source) throws IOException {
     File file = tempFolder.newFile();
-    Files.write(source, file, CHARSET);
+    Files.write(file.toPath(), source.getBytes(CHARSET));
 
     DefaultFileSystem fileSystem = new DefaultFileSystem(file.getParentFile());
     fileSystem.setEncoding(CHARSET);

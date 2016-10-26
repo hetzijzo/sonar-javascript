@@ -20,6 +20,8 @@
 package org.sonar.javascript.highlighter;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collection;
 import org.junit.Test;
 import org.sonar.api.batch.fs.TextRange;
@@ -29,8 +31,6 @@ import org.sonar.api.batch.fs.internal.DefaultTextRange;
 import org.sonar.api.batch.fs.internal.FileMetadata;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.symbol.NewSymbolTable;
-import org.sonar.api.internal.google.common.base.Charsets;
-import org.sonar.api.internal.google.common.io.Files;
 import org.sonar.javascript.utils.JavaScriptTreeModelTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +46,7 @@ public class HighlightSymbolTableBuilderTest extends JavaScriptTreeModelTest {
     inputFile = new DefaultInputFile("moduleKey", filename)
       .setModuleBaseDir(moduleBaseDir.toPath());
 
-    inputFile.initMetadata(new FileMetadata().readMetadata(inputFile.file(), Charsets.UTF_8));
+    inputFile.initMetadata(new FileMetadata().readMetadata(inputFile.file(), StandardCharsets.UTF_8));
     return sensorContext.newSymbolTable().onFile(inputFile);
   }
 
@@ -104,7 +104,7 @@ public class HighlightSymbolTableBuilderTest extends JavaScriptTreeModelTest {
     String filename = "symbolHighlightingBom.js";
 
     HighlightSymbolTableBuilder.build(newSymbolTable(filename), context(inputFile.file()));
-    assertThat(Files.toString(inputFile.file(), Charsets.UTF_8).startsWith("\uFEFF")).isTrue();
+    assertThat(new String(Files.readAllBytes(inputFile.path()), StandardCharsets.UTF_8).startsWith("\uFEFF")).isTrue();
     assertThat(references("moduleKey:" + filename, 1, 4)).containsOnly(textRange(3, 0, 1));
   }
 

@@ -24,6 +24,7 @@ import com.sonar.sslr.api.RecognitionException;
 import java.io.File;
 import java.io.InterruptedIOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import org.apache.commons.lang.NotImplementedException;
 import org.junit.Before;
@@ -41,8 +42,8 @@ import org.sonar.api.batch.rule.internal.ActiveRulesBuilder;
 import org.sonar.api.batch.sensor.internal.DefaultSensorDescriptor;
 import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.batch.sensor.issue.Issue;
+import org.sonar.api.config.MapSettings;
 import org.sonar.api.config.Settings;
-import org.sonar.api.internal.google.common.base.Charsets;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
@@ -94,7 +95,7 @@ public class JavaScriptSquidSensorTest {
   }};
 
   private final File baseDir = new File("src/test/resources");
-  private final Settings settings = new Settings();
+  private final Settings settings = new MapSettings();
   private final ProgressReport progressReport = mock(ProgressReport.class);
   private final SensorContextTester context = SensorContextTester.create(baseDir);
 
@@ -315,7 +316,7 @@ public class JavaScriptSquidSensorTest {
 
     context.fileSystem().add(inputFile);
 
-    return inputFile.initMetadata(new FileMetadata().readMetadata(inputFile.file(), Charsets.UTF_8));
+    return inputFile.initMetadata(new FileMetadata().readMetadata(inputFile.file(), StandardCharsets.UTF_8));
   }
 
   private final class ExceptionRaisingCheck extends DoubleDispatchVisitorCheck {
