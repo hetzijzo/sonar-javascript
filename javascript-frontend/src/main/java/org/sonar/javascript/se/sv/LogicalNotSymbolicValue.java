@@ -64,7 +64,7 @@ public class LogicalNotSymbolicValue implements SymbolicValue {
 
   @Override
   public String toString() {
-    return "!" + negatedValue;
+    return "![" + negatedValue + "]";
   }
 
 }

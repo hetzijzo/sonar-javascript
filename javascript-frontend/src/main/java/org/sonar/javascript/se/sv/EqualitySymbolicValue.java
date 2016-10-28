@@ -48,6 +48,14 @@ public class EqualitySymbolicValue extends RelationalSymbolicValue {
     Optional<ProgramState> constrainedState = super.constrainDependencies(incomingState, constraint);
     constrainedState = constrainOperand(leftOperand, rightOperand, constraint, constrainedState.orElse(null));
     constrainedState = constrainOperand(rightOperand, leftOperand, constraint, constrainedState.orElse(null));
+
+    if (constrainedState.isPresent()) {
+      if ((constraint.isStricterOrEqualTo(Constraint.TRUTHY) && kind == Kind.STRICT_EQUAL_TO)
+        || (constraint.isStricterOrEqualTo(Constraint.FALSY) && kind == Kind.STRICT_NOT_EQUAL_TO)) {
+        return constrainedState.get().mergeTwoSV(leftOperand, rightOperand);
+      }
+    }
+
     return constrainedState;
   }
 
@@ -67,6 +75,7 @@ public class EqualitySymbolicValue extends RelationalSymbolicValue {
         return state.constrain(receiving, constraintOnNullOrUndefined(constraintOnSending).not());
       }
     }
+
     return Optional.of(state);
   }
 

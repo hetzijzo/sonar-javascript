@@ -52,7 +52,7 @@ public class LogicalNotSymbolicValueTest {
     ProgramState state1 = ProgramState.emptyState().newSymbolicValue(symbol, null);
     SymbolicValue sv1 = state1.getSymbolicValue(symbol);
     SymbolicValue not = LogicalNotSymbolicValue.create(sv1);
-    assertThat(not.toString()).isEqualTo("!SV_0");
+    assertThat(not.toString()).isEqualTo("![SV_0]");
   }
 
 }

@@ -150,10 +150,11 @@ public class ProgramState implements ProgramStateConstraints {
     if (value == null || constraint == null || value.equals(UnknownSymbolicValue.UNKNOWN)) {
       return Optional.of(this);
     }
-    if (getConstraint(value).isIncompatibleWith(constraint)) {
+    Constraint valueConstraint = getConstraint(value);
+    if (valueConstraint.isIncompatibleWith(constraint)) {
       return Optional.empty();
     }
-    Constraint newConstraint = getConstraint(value).and(constraint);
+    Constraint newConstraint = valueConstraint.and(constraint);
     ProgramState newState = new ProgramState(values, replaceConstraint(value, newConstraint), stack, relations, counter);
     return value.constrainDependencies(newState, constraint);
   }
@@ -336,5 +337,15 @@ public class ProgramState implements ProgramStateConstraints {
   @Override
   public String toString() {
     return "[" + values + ";" + constraints + ";" + stack + ";" + relations + "]";
+  }
+
+  public Optional<ProgramState> mergeTwoSV(SymbolicValue firstSV, SymbolicValue secondSV) {
+    Constraint firstConstraint = this.getConstraint(firstSV);
+    Constraint secondConstraint = this.getConstraint(firstSV);
+    SymbolicValue newSV = newSymbolicValue();
+
+
+
+    return new ProgramState(replace(values, firstSV, secondSV, newSV), replace(constraints, firstSV, secondSV, newSV), stack.replace(firstSV, secondSV, newSV), );
   }
 }

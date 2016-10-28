@@ -52,4 +52,15 @@ function main() {
     foo(x3); // PS x3=ZERO
   }
 
+  a = foo();
+  b = bar();
+
+  if (a === b) {
+      if (a) {
+        foo(); // PS b=TRUTHY
+      }
+  }
+
+  makeLive(a, b);
+
 }

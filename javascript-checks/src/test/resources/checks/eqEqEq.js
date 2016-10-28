@@ -1,4 +1,4 @@
-function sayHello(c) {
+/*function sayHello(c) {
   if (c) {
     foo();
   }
@@ -66,3 +66,18 @@ function withTry() {
   if (a == b) { // Noncompliant
   }
 }
+*/
+
+function jjj(x1, y1, x2, y2) {
+
+      if (x1 === x2 && y1 === y2) {
+        return
+      }
+
+      foo(x1 || 0, y1 || 0);
+      foo(x2 || 0, y2 || 0);
+
+      if (drawCrisp) {
+        if (x1 === x2) curContext.translate(-0.5, 0);
+      }
+    }
