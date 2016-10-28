@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.sensor.SensorContext;
 import org.sonar.api.ce.measure.RangeDistributionBuilder;
@@ -50,7 +49,6 @@ public class MetricsVisitor extends SubscriptionVisitor {
     Kind.CLASS_EXPRESSION
   };
 
-  private final FileSystem fs;
   private final SensorContext sensorContext;
   private InputFile inputFile;
   private NoSonarFilter noSonarFilter;
@@ -64,10 +62,9 @@ public class MetricsVisitor extends SubscriptionVisitor {
   private RangeDistributionBuilder fileComplexityDistribution;
 
   public MetricsVisitor(
-    FileSystem fs, SensorContext context, NoSonarFilter noSonarFilter, Boolean ignoreHeaderComments,
+    SensorContext context, NoSonarFilter noSonarFilter, Boolean ignoreHeaderComments,
     FileLinesContextFactory fileLinesContextFactory, Map<InputFile, Set<Integer>> projectLinesOfCode
   ) {
-    this.fs = fs;
     this.sensorContext = context;
     this.noSonarFilter = noSonarFilter;
     this.ignoreHeaderComments = ignoreHeaderComments;
@@ -103,7 +100,7 @@ public class MetricsVisitor extends SubscriptionVisitor {
 
   @Override
   public void visitFile(Tree scriptTree) {
-    this.inputFile = fs.inputFile(fs.predicates().is(getContext().getFile()));
+    this.inputFile = getContext().getFile();
     init();
   }
 

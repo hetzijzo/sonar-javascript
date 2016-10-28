@@ -20,10 +20,13 @@
 package org.sonar.javascript.utils;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
 import com.sonar.sslr.api.typed.ActionParser;
-import java.io.File;
+
+import java.io.IOException;
 import java.util.Iterator;
 import org.sonar.javascript.visitors.JavaScriptVisitorContext;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.javascript.parser.JavaScriptParserBuilder;
 import org.sonar.javascript.tree.impl.JavaScriptTree;
 import org.sonar.javascript.tree.symbols.SymbolModelImpl;
@@ -50,14 +53,22 @@ public abstract class JavaScriptTreeModelTest {
     return (T) getFirstDescendant((JavaScriptTree) node, descendantToReturn);
   }
 
-  protected SymbolModelImpl symbolModel(File file) {
-    ScriptTree root = (ScriptTree) p.parse(file);
-    return (SymbolModelImpl) new JavaScriptVisitorContext(root, file, null).getSymbolModel();
+  protected SymbolModelImpl symbolModel(InputFile file) {
+    try {
+      ScriptTree root = (ScriptTree) p.parse(file.contents());
+      return (SymbolModelImpl) new JavaScriptVisitorContext(root, file, null).getSymbolModel();
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
   }
 
-  protected JavaScriptVisitorContext context(File file) {
-    ScriptTree root = (ScriptTree) p.parse(file);
-    return new JavaScriptVisitorContext(root, file, null);
+  protected JavaScriptVisitorContext context(InputFile file) {
+    try {
+      ScriptTree root = (ScriptTree) p.parse(file.contents());
+      return new JavaScriptVisitorContext(root, file, null);
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
   }
 
   private Tree getFirstDescendant(JavaScriptTree node, Kind descendantToReturn) {

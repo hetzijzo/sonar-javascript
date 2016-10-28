@@ -19,9 +19,9 @@
  */
 package org.sonar.javascript.tree.symbols;
 
-import java.io.File;
 import org.junit.Test;
 import org.sonar.javascript.utils.JavaScriptTreeModelTest;
+import org.sonar.javascript.utils.TestInputFile;
 import org.sonar.plugins.javascript.api.symbols.Symbol;
 import org.sonar.plugins.javascript.api.symbols.Symbol.Kind;
 import org.sonar.plugins.javascript.api.tree.Tree;
@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SymbolModelImplTest extends JavaScriptTreeModelTest {
 
-  private SymbolModelImpl SYMBOL_MODEL = symbolModel(new File("src/test/resources/ast/resolve/symbolModel.js"));
+  private SymbolModelImpl SYMBOL_MODEL = symbolModel(new TestInputFile("src/test/resources/ast/resolve/symbolModel.js"));
 
   @Test
   public void symbols_filtering() {

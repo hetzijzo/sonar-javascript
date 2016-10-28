@@ -84,7 +84,7 @@
     <logback.version>1.0.13</logback.version>
     <mockito.version>1.9.0</mockito.version>
     <slf4j.version>1.7.21</slf4j.version>
-    <sonar.version>6.2-SNAPSHOT</sonar.version>
+    <sonar.version>6.2-build14732</sonar.version>
     <sonar-orchestrator.version>3.10.1</sonar-orchestrator.version>
     <sonarlint.version>2.3.2</sonarlint.version>
     <sslr.version>1.21</sslr.version>
@@ -101,11 +101,6 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>javascript-frontend</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>javascript-checks-testkit</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -176,6 +171,11 @@
       </dependency>
 
       <!-- Test dependencies -->
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>javascript-checks-testkit</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>

@@ -59,7 +59,6 @@ public class MetricsVisitorTest extends JavaScriptTreeModelTest {
     HashMap<InputFile, Set<Integer>> projectLinesOfCode = new HashMap<>();
 
     MetricsVisitor metricsVisitor = new MetricsVisitor(
-      context.fileSystem(),
       context,
       mock(NoSonarFilter.class),
       false,
@@ -67,7 +66,7 @@ public class MetricsVisitorTest extends JavaScriptTreeModelTest {
       projectLinesOfCode);
 
     TreeVisitorContext treeVisitorContext = mock(TreeVisitorContext.class);
-    when(treeVisitorContext.getFile()).thenReturn(inputFile.file());
+    when(treeVisitorContext.getFile()).thenReturn(inputFile);
     when(treeVisitorContext.getTopTree()).thenReturn((ScriptTree) p.parse(inputFile.file()));
 
     metricsVisitor.scanTree(treeVisitorContext);
