@@ -38,7 +38,7 @@ import org.sonar.plugins.javascript.api.visitors.TreeVisitorContext;
  */
 public class SeCheck implements JavaScriptCheck {
 
-  private Issues issues = new Issues(this);
+  protected Issues issues = new Issues(this);
 
   /**
    * Override this method to check the truthiness of conditions in current execution (aka function scope).
