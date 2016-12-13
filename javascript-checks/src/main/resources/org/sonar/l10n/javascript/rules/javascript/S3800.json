@@ -1,0 +1,14 @@
+{
+  "title": "Functions should always return the same type",
+  "type": "CODE_SMELL",
+  "status": "ready",
+  "remediation": {
+    "func": "Linear",
+    "linearDesc": "Minutes per return statement",
+    "linearFactor": "5min"
+  },
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Major"
+}
